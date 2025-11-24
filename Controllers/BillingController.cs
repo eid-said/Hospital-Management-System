@@ -1,13 +1,14 @@
-﻿using Hospital_Management_System.Models;
-using Hospital_Management_System.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Hospital_Management_System.Models.DTOs.Billing;
+//using Hospital_Management_System.Services.Billing;
+using Hospital_Management_System.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_Management_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   
     public class BillingController : ControllerBase
     {
         private readonly IBillingService _billingService;
@@ -17,48 +18,52 @@ namespace Hospital_Management_System.Controllers
             _billingService = billingService;
         }
 
+        // allow all roles to view bills
         [HttpGet]
+        [Authorize(Roles = "Admin,Accountant,Doctor,Reception")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _billingService.GetAllAsync();
             return Ok(result);
         }
 
+        // allow all roles to view bills
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Accountant,Doctor,Reception")]
         public async Task<IActionResult> GetById(int id)
         {
-            var bill = await _billingService.GetByIdAsync(id);
-            if (bill == null)
-                return NotFound();
-
-            return Ok(bill);
+            var result = await _billingService.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
+        // only Admin + Accountant can create
         [HttpPost]
-        public async Task<IActionResult> Create(Billing billing)
+        [Authorize(Roles = "Admin,Accountant")]
+        public async Task<IActionResult> Create([FromBody] BillingCreateDto dto)
         {
-            var newBill = await _billingService.CreateAsync(billing);
-            return Ok(newBill);
+            var result = await _billingService.CreateAsync(dto);
+            return Ok(result);
         }
 
+        // only Admin + Accountant can update
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Billing billing)
+        [Authorize(Roles = "Admin,Accountant")]
+        public async Task<IActionResult> Update(int id, [FromBody] BillingUpdateDto dto)
         {
-            if (id != billing.Id)
-                return BadRequest();
-
-            var updated = await _billingService.UpdateAsync(billing);
-            return Ok(updated);
+            var result = await _billingService.UpdateAsync(id, dto);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
+        // only Admin can delete
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _billingService.DeleteAsync(id);
-            if (!deleted)
-                return NotFound();
-
-            return Ok();
+            if (!deleted) return NotFound();
+            return Ok(new { message = "Deleted Successfully" });
         }
     }
 }

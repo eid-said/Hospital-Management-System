@@ -1,20 +1,18 @@
-﻿using Hospital_Management_System.Data;
-using Hospital_Management_System.Models;
-using Hospital_Management_System.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Hospital_Management_System.Services.Interfaces;
+using Hospital_Management_System.ViewModels.Patient;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_Management_System.Controllers
 {
-    [Authorize(Roles = "Admin,Doctor,Reception")]
     [Route("api/[controller]")]
     [ApiController]
-    public class PatientsController : ControllerBase
+    
+    public class PatientController : ControllerBase
     {
         private readonly IPatientService _patientService;
 
-        public PatientsController(IPatientService patientService)
+        public PatientController(IPatientService patientService)
         {
             _patientService = patientService;
         }
@@ -29,38 +27,34 @@ namespace Hospital_Management_System.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var patient = await _patientService.GetByIdAsync(id);
-            if (patient == null)
-                return NotFound();
-
-            return Ok(patient);
+            var result = await _patientService.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Patient patient)
+        public async Task<IActionResult> Create([FromBody] PatientCreateDto dto)
         {
-            var newPatient = await _patientService.CreateAsync(patient);
-            return Ok(newPatient);
+            var result = await _patientService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Patient patient)
+        public async Task<IActionResult> Update(int id, [FromBody] PatientUpdateDto dto)
         {
-            if (id != patient.Id)
-                return BadRequest();
+            var success = await _patientService.UpdateAsync(id, dto);
+            if (!success) return NotFound();
 
-            var updated = await _patientService.UpdateAsync(patient);
-            return Ok(updated);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _patientService.DeleteAsync(id);
-            if (!deleted)
-                return NotFound();
+            var success = await _patientService.DeleteAsync(id);
+            if (!success) return NotFound();
 
-            return Ok();
+            return NoContent();
         }
     }
 }

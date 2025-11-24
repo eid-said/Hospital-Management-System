@@ -1,6 +1,10 @@
 using Hospital_Management_System.Data;
+using Hospital_Management_System.Mappings;
+using Hospital_Management_System.Models;
 using Hospital_Management_System.Repositories;
 using Hospital_Management_System.Services;
+using Hospital_Management_System.Services.Implementations; // implementation namespace
+using Hospital_Management_System.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +19,7 @@ namespace Hospital_Management_System
         {
             var builder = WebApplication.CreateBuilder(args);
 
+           // builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
@@ -47,27 +52,32 @@ namespace Hospital_Management_System
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Identity
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
 
-            // JWT
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                            .AddEntityFrameworkStores<ApplicationDbContext>()
+                            .AddDefaultTokenProviders();
+
+            // JWT setup 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtSettings["Issuer"],
-                        ValidAudience = jwtSettings["Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+                };
+            });
 
             // App Services
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -76,16 +86,64 @@ namespace Hospital_Management_System
             builder.Services.AddScoped<IPatientService, PatientService>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IBillingService, BillingService>();
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+
+            builder.Services.AddAutoMapper(typeof(Program));
+
 
             var app = builder.Build();
 
-            // Seed Roles
             using (var scope = app.Services.CreateScope())
             {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var services = scope.ServiceProvider;
 
-                await SeedData.InitializeAsync(roleManager, userManager);
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
+                string[] roles = new[] { "Admin", "Doctor", "Reception" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                }
+
+                // Seed Admin
+                string adminEmail = "admin@gmail.com";
+                string adminPassword = "Admin123!";
+
+                var adminUser = await userManager.FindByEmailAsync(adminEmail);
+                if (adminUser == null)
+                {
+                    adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail };
+                    await userManager.CreateAsync(adminUser, adminPassword);
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                }
+
+                // Seed Doctor
+                string doctorEmail = "doctor@gmail.com";
+                string doctorPassword = "Doc123!";
+
+                var doctorUser = await userManager.FindByEmailAsync(doctorEmail);
+                if (doctorUser == null)
+                {
+                    doctorUser = new ApplicationUser { UserName = doctorEmail, Email = doctorEmail };
+                    await userManager.CreateAsync(doctorUser, doctorPassword);
+                    await userManager.AddToRoleAsync(doctorUser, "Doctor");
+                }
+
+                // Seed Reception
+                string receptionEmail = "reception@gmail.com";
+                string receptionPassword = "Recep123!";
+
+                var receptionUser = await userManager.FindByEmailAsync(receptionEmail);
+                if (receptionUser == null)
+                {
+                    receptionUser = new ApplicationUser { UserName = receptionEmail, Email = receptionEmail };
+                    await userManager.CreateAsync(receptionUser, receptionPassword);
+                    await userManager.AddToRoleAsync(receptionUser, "Reception");
+                }
             }
 
 

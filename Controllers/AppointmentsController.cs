@@ -1,63 +1,58 @@
-﻿using Hospital_Management_System.Models;
-using Hospital_Management_System.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Hospital_Management_System.Services;
+using Hospital_Management_System.Services.Interfaces;
+using Hospital_Management_System.ViewModels.Appointment;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_Management_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AppointmentsController : ControllerBase
+     
+    public class AppointmentController : ControllerBase
     {
-        private readonly IAppointmentService _appointmentService;
+        private readonly IAppointmentService _service;
 
-        public AppointmentsController(IAppointmentService appointmentService)
+        public AppointmentController(IAppointmentService service)
         {
-            _appointmentService = appointmentService;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _appointmentService.GetAllAsync();
-            return Ok(result);
+            return Ok(await _service.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var appointment = await _appointmentService.GetByIdAsync(id);
-            if (appointment == null)
-                return NotFound();
-
-            return Ok(appointment);
+            var item = await _service.GetByIdAsync(id);
+            if (item == null) return NotFound();
+            return Ok(item);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Appointment appointment)
+        public async Task<IActionResult> Create(AppointmentCreateDto model)
         {
-            var newAppointment = await _appointmentService.CreateAsync(appointment);
-            return Ok(newAppointment);
+            var result = await _service.CreateAsync(model);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Appointment appointment)
+        public async Task<IActionResult> Update(int id, AppointmentUpdateDto model)
         {
-            if (id != appointment.Id)
-                return BadRequest();
-
-            var updated = await _appointmentService.UpdateAsync(appointment);
-            return Ok(updated);
+            var result = await _service.UpdateAsync(id, model);
+            if (!result) return NotFound();
+            return Ok("Updated successfully");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _appointmentService.DeleteAsync(id);
-            if (!deleted)
-                return NotFound();
-
-            return Ok();
+            var result = await _service.DeleteAsync(id);
+            if (!result) return NotFound();
+            return Ok("Deleted successfully");
         }
     }
 }

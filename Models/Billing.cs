@@ -1,16 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Hospital_Management_System.Models;
 
-namespace Hospital_Management_System.Models
+public class Billing
 {
-    public class Billing
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
+    public decimal Amount { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public decimal Amount { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public int AppointmentId { get; set; }
+    public Appointment Appointment { get; set; }
 
-        // Relation to Patient
-        public int PatientId { get; set; }
-        public Patient Patient { get; set; } = null!;
-    }
+   
 }

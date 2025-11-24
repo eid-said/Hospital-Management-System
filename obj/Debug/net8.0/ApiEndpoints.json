@@ -1,8 +1,8 @@
 [
   {
-    "ContainingType": "Hospital_Management_System.Controllers.AppointmentsController",
+    "ContainingType": "Hospital_Management_System.Controllers.AppointmentController",
     "Method": "GetAll",
-    "RelativePath": "api/Appointments",
+    "RelativePath": "api/Appointment",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -10,25 +10,25 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.AppointmentsController",
+    "ContainingType": "Hospital_Management_System.Controllers.AppointmentController",
     "Method": "Create",
-    "RelativePath": "api/Appointments",
+    "RelativePath": "api/Appointment",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "appointment",
-        "Type": "Hospital_Management_System.Models.Appointment",
+        "Name": "model",
+        "Type": "Hospital_Management_System.ViewModels.Appointment.AppointmentCreateDto",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.AppointmentsController",
-    "Method": "GetById",
-    "RelativePath": "api/Appointments/{id}",
+    "ContainingType": "Hospital_Management_System.Controllers.AppointmentController",
+    "Method": "Get",
+    "RelativePath": "api/Appointment/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -42,9 +42,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.AppointmentsController",
+    "ContainingType": "Hospital_Management_System.Controllers.AppointmentController",
     "Method": "Update",
-    "RelativePath": "api/Appointments/{id}",
+    "RelativePath": "api/Appointment/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -55,17 +55,17 @@
         "IsRequired": true
       },
       {
-        "Name": "appointment",
-        "Type": "Hospital_Management_System.Models.Appointment",
+        "Name": "model",
+        "Type": "Hospital_Management_System.ViewModels.Appointment.AppointmentUpdateDto",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.AppointmentsController",
+    "ContainingType": "Hospital_Management_System.Controllers.AppointmentController",
     "Method": "Delete",
-    "RelativePath": "api/Appointments/{id}",
+    "RelativePath": "api/Appointment/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -129,8 +129,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "billing",
-        "Type": "Hospital_Management_System.Models.Billing",
+        "Name": "dto",
+        "Type": "Hospital_Management_System.Models.DTOs.Billing.BillingCreateDto",
         "IsRequired": true
       }
     ],
@@ -166,8 +166,8 @@
         "IsRequired": true
       },
       {
-        "Name": "billing",
-        "Type": "Hospital_Management_System.Models.Billing",
+        "Name": "dto",
+        "Type": "Hospital_Management_System.Models.DTOs.Billing.BillingUpdateDto",
         "IsRequired": true
       }
     ],
@@ -190,35 +190,75 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DepartmentsController",
-    "Method": "GetAll",
-    "RelativePath": "api/Departments",
+    "ContainingType": "Hospital_Management_System.Controllers.DashboardController",
+    "Method": "GetStats",
+    "RelativePath": "api/Dashboard/stats",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Hospital_Management_System.Models.DTOs.Dashboard.DashboardStatsDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DepartmentsController",
+    "ContainingType": "Hospital_Management_System.Controllers.DepartmentController",
+    "Method": "GetAll",
+    "RelativePath": "api/Department",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[Hospital_Management_System.ViewModels.Department.DepartmentResponseDto, Hospital Management System, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Hospital_Management_System.Controllers.DepartmentController",
     "Method": "Create",
-    "RelativePath": "api/Departments",
+    "RelativePath": "api/Department",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "department",
-        "Type": "Hospital_Management_System.Models.Department",
+        "Name": "dto",
+        "Type": "Hospital_Management_System.ViewModels.Department.DepartmentCreateDto",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Hospital_Management_System.ViewModels.Department.DepartmentResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DepartmentsController",
-    "Method": "GetById",
-    "RelativePath": "api/Departments/{id}",
+    "ContainingType": "Hospital_Management_System.Controllers.DepartmentController",
+    "Method": "Get",
+    "RelativePath": "api/Department/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -229,12 +269,22 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "Hospital_Management_System.ViewModels.Department.DepartmentResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DepartmentsController",
+    "ContainingType": "Hospital_Management_System.Controllers.DepartmentController",
     "Method": "Update",
-    "RelativePath": "api/Departments/{id}",
+    "RelativePath": "api/Department/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -245,17 +295,17 @@
         "IsRequired": true
       },
       {
-        "Name": "department",
-        "Type": "Hospital_Management_System.Models.Department",
+        "Name": "dto",
+        "Type": "Hospital_Management_System.ViewModels.Department.DepartmentUpdateDto",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DepartmentsController",
+    "ContainingType": "Hospital_Management_System.Controllers.DepartmentController",
     "Method": "Delete",
-    "RelativePath": "api/Departments/{id}",
+    "RelativePath": "api/Department/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -269,9 +319,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DoctorsController",
+    "ContainingType": "Hospital_Management_System.Controllers.DoctorController",
     "Method": "GetAll",
-    "RelativePath": "api/Doctors",
+    "RelativePath": "api/Doctor",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -279,25 +329,25 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DoctorsController",
+    "ContainingType": "Hospital_Management_System.Controllers.DoctorController",
     "Method": "Create",
-    "RelativePath": "api/Doctors",
+    "RelativePath": "api/Doctor",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "doctor",
-        "Type": "Hospital_Management_System.Models.Doctor",
+        "Name": "dto",
+        "Type": "Hospital_Management_System.ViewModels.Doctor.DoctorCreateDto",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DoctorsController",
+    "ContainingType": "Hospital_Management_System.Controllers.DoctorController",
     "Method": "GetById",
-    "RelativePath": "api/Doctors/{id}",
+    "RelativePath": "api/Doctor/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -311,9 +361,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DoctorsController",
+    "ContainingType": "Hospital_Management_System.Controllers.DoctorController",
     "Method": "Update",
-    "RelativePath": "api/Doctors/{id}",
+    "RelativePath": "api/Doctor/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -324,17 +374,17 @@
         "IsRequired": true
       },
       {
-        "Name": "doctor",
-        "Type": "Hospital_Management_System.Models.Doctor",
+        "Name": "dto",
+        "Type": "Hospital_Management_System.ViewModels.Doctor.DoctorUpdateDto",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.DoctorsController",
+    "ContainingType": "Hospital_Management_System.Controllers.DoctorController",
     "Method": "Delete",
-    "RelativePath": "api/Doctors/{id}",
+    "RelativePath": "api/Doctor/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -348,9 +398,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.PatientsController",
+    "ContainingType": "Hospital_Management_System.Controllers.PatientController",
     "Method": "GetAll",
-    "RelativePath": "api/Patients",
+    "RelativePath": "api/Patient",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -358,25 +408,25 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.PatientsController",
+    "ContainingType": "Hospital_Management_System.Controllers.PatientController",
     "Method": "Create",
-    "RelativePath": "api/Patients",
+    "RelativePath": "api/Patient",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "patient",
-        "Type": "Hospital_Management_System.Models.Patient",
+        "Name": "dto",
+        "Type": "Hospital_Management_System.ViewModels.Patient.PatientCreateDto",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.PatientsController",
+    "ContainingType": "Hospital_Management_System.Controllers.PatientController",
     "Method": "GetById",
-    "RelativePath": "api/Patients/{id}",
+    "RelativePath": "api/Patient/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -390,9 +440,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.PatientsController",
+    "ContainingType": "Hospital_Management_System.Controllers.PatientController",
     "Method": "Update",
-    "RelativePath": "api/Patients/{id}",
+    "RelativePath": "api/Patient/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -403,17 +453,17 @@
         "IsRequired": true
       },
       {
-        "Name": "patient",
-        "Type": "Hospital_Management_System.Models.Patient",
+        "Name": "dto",
+        "Type": "Hospital_Management_System.ViewModels.Patient.PatientUpdateDto",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Hospital_Management_System.Controllers.PatientsController",
+    "ContainingType": "Hospital_Management_System.Controllers.PatientController",
     "Method": "Delete",
-    "RelativePath": "api/Patients/{id}",
+    "RelativePath": "api/Patient/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

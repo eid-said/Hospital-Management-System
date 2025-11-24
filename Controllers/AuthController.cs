@@ -1,11 +1,12 @@
-﻿using Hospital_Management_System.Models.Auth;
+﻿using Hospital_Management_System.Models;
+using Hospital_Management_System.Models.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Authorization;
 
 
 namespace Hospital_Management_System.Controllers
@@ -16,13 +17,13 @@ namespace Hospital_Management_System.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
         private readonly IConfiguration _config;
 
 
-        public AuthController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config)
+        public AuthController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -32,7 +33,7 @@ namespace Hospital_Management_System.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto model)
         {
-            var user = new IdentityUser
+            var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email
@@ -68,29 +69,36 @@ namespace Hospital_Management_System.Controllers
             if (!check) return Unauthorized("Invalid Password");
 
             var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault();
 
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.NameIdentifier, user.Id),
-        new Claim(ClaimTypes.Role, role)
-    };
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+
+            // ✅ read JWT settings from appsettings.json
+            var jwtSettings = _config.GetSection("Jwt");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                _config["Jwt:Issuer"],
-                _config["Jwt:Audience"],
-                claims,
-                expires: DateTime.Now.AddHours(8),
+                issuer: jwtSettings["Issuer"],
+                audience: jwtSettings["Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(8),
                 signingCredentials: creds);
+
+            // ✅ generate token string
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             return Ok(new
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                role = role
+                token = tokenString,
+                expiration = token.ValidTo
             });
         }
 

@@ -1,65 +1,63 @@
-﻿using Hospital_Management_System.Models;
-using Hospital_Management_System.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Hospital_Management_System.Services;
+using Hospital_Management_System.ViewModels.Department;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_Management_System.Controllers
 {
-    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentsController : ControllerBase
+    [Authorize(Roles = "Admin")]
+
+
+    public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentService _departmentService;
 
-        public DepartmentsController(IDepartmentService departmentService)
+        public DepartmentController(IDepartmentService departmentService)
         {
             _departmentService = departmentService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<DepartmentResponseDto>>> GetAll()
         {
-            var result = await _departmentService.GetAllDepartmentsAsync();
+            var result = await _departmentService.GetAllAsync();
             return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<DepartmentResponseDto>> Get(int id)
         {
-            var department = await _departmentService.GetDepartmentByIdAsync(id);
-            if (department == null)
-                return NotFound();
+            var dept = await _departmentService.GetByIdAsync(id);
+            if (dept == null) return NotFound();
 
-            return Ok(department);
+            return Ok(dept);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Department department)
+        public async Task<ActionResult<DepartmentResponseDto>> Create(DepartmentCreateDto dto)
         {
-            var newDepartment = await _departmentService.CreateDepartmentAsync(department);
-            return Ok(newDepartment);
+            var newDept = await _departmentService.CreateAsync(dto);
+            return CreatedAtAction(nameof(Get), new { id = newDept.Id }, newDept);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Department department)
+        public async Task<IActionResult> Update(int id, DepartmentUpdateDto dto)
         {
-            if (id != department.Id)
-                return BadRequest();
+            var updated = await _departmentService.UpdateAsync(id, dto);
+            if (!updated) return NotFound();
 
-            var updated = await _departmentService.UpdateDepartmentAsync(department);
-            return Ok(updated);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _departmentService.DeleteDepartmentAsync(id);
-            if (!deleted)
-                return NotFound();
+            var deleted = await _departmentService.DeleteAsync(id);
+            if (!deleted) return NotFound();
 
-            return Ok();
+            return NoContent();
         }
     }
 }

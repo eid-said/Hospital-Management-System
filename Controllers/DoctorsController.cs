@@ -1,19 +1,19 @@
-﻿using Hospital_Management_System.Models;
-using Hospital_Management_System.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿
+using Hospital_Management_System.Services.Interfaces;
+using Hospital_Management_System.ViewModels.Doctor;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_Management_System.Controllers
 {
-    [Authorize(Roles = "Admin,Doctor")]
     [Route("api/[controller]")]
     [ApiController]
-    public class DoctorsController : ControllerBase
+    
+    public class DoctorController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
 
-        public DoctorsController(IDoctorService doctorService)
+        public DoctorController(IDoctorService doctorService)
         {
             _doctorService = doctorService;
         }
@@ -28,38 +28,32 @@ namespace Hospital_Management_System.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var doctor = await _doctorService.GetByIdAsync(id);
-            if (doctor == null)
-                return NotFound();
-
-            return Ok(doctor);
+            var result = await _doctorService.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Doctor doctor)
+        public async Task<IActionResult> Create([FromBody] DoctorCreateDto dto)
         {
-            var newDoctor = await _doctorService.CreateAsync(doctor);
-            return Ok(newDoctor);
+            var result = await _doctorService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Doctor doctor)
+        public async Task<IActionResult> Update(int id, [FromBody] DoctorUpdateDto dto)
         {
-            if (id != doctor.Id)
-                return BadRequest();
-
-            var updated = await _doctorService.UpdateAsync(doctor);
-            return Ok(updated);
+            var success = await _doctorService.UpdateAsync(id, dto);
+            if (!success) return NotFound();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _doctorService.DeleteAsync(id);
-            if (!deleted)
-                return NotFound();
-
-            return Ok();
+            var success = await _doctorService.DeleteAsync(id);
+            if (!success) return NotFound();
+            return NoContent();
         }
     }
 }
