@@ -5,11 +5,11 @@ A modern, extensible Hospital Management System built with ASP.NET Core and Enti
 # Screenshots
 ## Appointment resource
   
- ![Dashboard screenshot](images/1.jpg)
+ ![Dashboard screenshot](images/1.jpeg)
   
 ## For Authentecation
  
- ![Authentecation screenshot](images/2.jpg)
+ ![Authentecation screenshot](images/2.jpeg)
   
 
 Table of contents
